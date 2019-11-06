@@ -15,4 +15,8 @@ public class ConsultaResponse {
     private int estado;
     private String mensaje;
 
+    public ConsultaResponse(String cuil, int estado){
+        this.cuil = cuil;
+        this.estado = estado;
+    }
 }
