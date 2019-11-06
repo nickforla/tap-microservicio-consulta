@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +33,13 @@ public class ServicioConsulta implements IServicioConsulta {
 
             if(personaOptional.isPresent()){
 
-                return clienteRiesgo.determinarEstadoPersona(personaOptional.get());
+                try{
+                    return clienteRiesgo.determinarEstadoPersona(personaOptional.get());
+                }catch (IOException exc){
+
+                    logger.error(exc.getMessage());
+                    throw new CuilNoValidoException("LALALA");
+                }
 
             }
 
