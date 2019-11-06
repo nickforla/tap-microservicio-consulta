@@ -32,9 +32,7 @@ public class ServicioConsulta implements IServicioConsulta {
 
             if(personaOptional.isPresent()){
 
-                logger.info("YENDO AL CLIENTE");
-
-                return new ConsultaResponse(cuil, 1);
+                return clienteRiesgo.determinarEstadoPersona(personaOptional.get());
 
             }
 
