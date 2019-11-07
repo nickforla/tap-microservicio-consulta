@@ -25,7 +25,7 @@ public class ServicioConsulta implements IServicioConsulta {
     }
 
     @Override
-    public ConsultaResponse analizarEstadoPersona(String cuil) throws CuilNoValidoException{
+    public ConsultaResponse analizarEstadoPersona(String cuil) throws CuilNoValidoException, IOException{
 
         if(ValidadorCuil.esCuilValido(cuil)){
 
@@ -33,17 +33,11 @@ public class ServicioConsulta implements IServicioConsulta {
 
             if(personaOptional.isPresent()){
 
-                try{
-                    return clienteRiesgo.determinarEstadoPersona(personaOptional.get());
-                }catch (IOException exc){
-
-                    logger.error(exc.getMessage());
-                    throw new CuilNoValidoException("LALALA");
-                }
+                return clienteRiesgo.determinarEstadoPersona(personaOptional.get());
 
             }
 
-            return new ConsultaResponse(cuil, 0, "No se encontraron datos del solicitante para determinar el estado");
+            return new ConsultaResponse(cuil,"No se encontraron datos del solicitante para determinar el estado");
 
         }
 
@@ -52,7 +46,7 @@ public class ServicioConsulta implements IServicioConsulta {
     }
 
     @Override
-    public List<ConsultaResponse> analizarEstadoPersonas(List<String> cuils) {
+    public List<ConsultaResponse> analizarEstadoPersonas(List<String> cuils) throws IOException {
         return null;
     }
 }

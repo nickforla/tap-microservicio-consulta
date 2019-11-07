@@ -5,11 +5,14 @@ import nforla.tap.microservicioconsulta.modelo.ConsultaResponse;
 import nforla.tap.microservicioconsulta.servicios.IServicioConsulta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping(path = "/analizarEstado")
@@ -36,7 +39,14 @@ public class ConsultaController {
             logger.error(exc.getMessage());
 
             return ResponseEntity.badRequest()
-                    .body(new ConsultaResponse(cuil, 0, exc.getMessage()));
+                    .body(new ConsultaResponse(cuil, exc.getMessage()));
+
+        }catch (IOException exc){
+
+            logger.error("Ha ocurrido una excepción: " + exc.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ConsultaResponse(cuil, "Ha ocurrido un error al intentar determinar el estado. Intente nuevamente."));
 
         }
     }

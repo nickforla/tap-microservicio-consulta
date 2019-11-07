@@ -18,6 +18,8 @@ public class ClienteRiesgo implements IClienteRiesgo {
     private final Logger logger = LoggerFactory.getLogger(ClienteRiesgo.class);
     private OkHttpClient httpClient;
     private ObjectMapper objectMapper;
+    private final MediaType MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
+    private final String MICROSERVICIO_RIESGO_URL = "http://localhost:8085/analizarEstado/persona";
 
     public ClienteRiesgo(OkHttpClient httpClient, ObjectMapper objectMapper) {
         this.httpClient = httpClient;
@@ -26,12 +28,13 @@ public class ClienteRiesgo implements IClienteRiesgo {
 
     @Override
     public ConsultaResponse determinarEstadoPersona(Persona persona) throws IOException {
-        logger.info("CONSULTADO AL MS DE RISGO");
 
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), objectMapper.writeValueAsString(persona));
+        logger.info("Solicitando estado al microservicio de riesgo --> " + persona);
+
+        RequestBody body = RequestBody.create(objectMapper.writeValueAsString(persona), MEDIA_TYPE);
 
         Request request = new Request.Builder()
-                .url("http://localhost:8085/analizarEstado/persona")
+                .url(MICROSERVICIO_RIESGO_URL)
                 .post(body)
                 .build();
 
