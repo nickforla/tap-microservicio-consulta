@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,37 @@ public class ServicioConsulta implements IServicioConsulta {
 
     @Override
     public List<ConsultaResponse> analizarEstadoPersonas(List<String> cuils) throws IOException {
-        return null;
+
+        List<Persona> personasParaAnalizarEstado = new ArrayList<>();
+        List<ConsultaResponse> respuestasSinEstado = new ArrayList<>();
+
+        cuils.forEach(cuil -> {
+            if(ValidadorCuil.esCuilValido(cuil)){
+
+                Optional<Persona> personaOptional = personaRepository.findByCuil(cuil);
+
+                if(personaOptional.isPresent()){
+
+                    personasParaAnalizarEstado.add(personaOptional.get());
+
+                }else {
+
+                    respuestasSinEstado.add(new ConsultaResponse(cuil, "No se encontraron datos del solicitante para determinar el estado"));
+                }
+
+            }else{
+
+                respuestasSinEstado.add(new ConsultaResponse(cuil, "El cuil no es válido"));
+
+            }
+        });
+
+
+        List<ConsultaResponse> respuestas = clienteRiesgo.determinarEstadoPeronas(personasParaAnalizarEstado);
+
+        respuestas.addAll(respuestasSinEstado);
+
+        return respuestas;
+
     }
 }

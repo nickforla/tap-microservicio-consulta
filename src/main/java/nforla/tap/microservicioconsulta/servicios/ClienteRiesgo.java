@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -48,6 +49,6 @@ public class ClienteRiesgo implements IClienteRiesgo {
 
     @Override
     public List<ConsultaResponse> determinarEstadoPeronas(List<Persona> personas) {
-        return null;
+        return new ArrayList<>();
     }
 }

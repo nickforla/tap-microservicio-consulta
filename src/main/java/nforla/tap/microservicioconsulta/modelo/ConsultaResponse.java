@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ConsultaResponse {
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cuil;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int estado;
@@ -23,6 +24,10 @@ public class ConsultaResponse {
 
     public ConsultaResponse(String cuil, String mensaje){
         this.cuil = cuil;
+        this.mensaje = mensaje;
+    }
+
+    public ConsultaResponse(String mensaje){
         this.mensaje = mensaje;
     }
 }
