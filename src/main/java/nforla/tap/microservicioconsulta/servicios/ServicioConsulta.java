@@ -1,6 +1,7 @@
 package nforla.tap.microservicioconsulta.servicios;
 
 import nforla.tap.microservicioconsulta.excepciones.CuilNoValidoException;
+import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
 import nforla.tap.microservicioconsulta.modelo.ConsultaResponse;
 import nforla.tap.microservicioconsulta.modelo.Persona;
 import nforla.tap.microservicioconsulta.repositorios.PersonaRepository;
@@ -26,7 +27,7 @@ public class ServicioConsulta implements IServicioConsulta {
     }
 
     @Override
-    public ConsultaResponse analizarEstadoPersona(String cuil) throws CuilNoValidoException, IOException{
+    public ConsultaResponse analizarEstadoPersona(String cuil) throws CuilNoValidoException, IOException, DeterminarEstadoException{
 
         if(ValidadorCuil.esCuilValido(cuil)){
 
@@ -47,7 +48,7 @@ public class ServicioConsulta implements IServicioConsulta {
     }
 
     @Override
-    public List<ConsultaResponse> analizarEstadoPersonas(List<String> cuils) throws IOException {
+    public List<ConsultaResponse> analizarEstadoPersonas(List<String> cuils) throws IOException, DeterminarEstadoException {
 
         List<Persona> personasParaAnalizarEstado = new ArrayList<>();
         List<ConsultaResponse> respuestasSinEstado = new ArrayList<>();
@@ -73,6 +74,11 @@ public class ServicioConsulta implements IServicioConsulta {
             }
         });
 
+        if(personasParaAnalizarEstado.isEmpty()){
+
+            return respuestasSinEstado;
+
+        }
 
         List<ConsultaResponse> respuestas = clienteRiesgo.determinarEstadoPeronas(personasParaAnalizarEstado);
 

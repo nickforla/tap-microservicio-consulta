@@ -1,5 +1,6 @@
 package nforla.tap.microservicioconsulta.servicios;
 
+import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
 import nforla.tap.microservicioconsulta.modelo.ConsultaResponse;
 import nforla.tap.microservicioconsulta.modelo.Persona;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface IClienteRiesgo {
 
-    ConsultaResponse determinarEstadoPersona(Persona persona) throws IOException;
-    List<ConsultaResponse> determinarEstadoPeronas(List<Persona> personas);
+    ConsultaResponse determinarEstadoPersona(Persona persona) throws IOException, DeterminarEstadoException;
+    List<ConsultaResponse> determinarEstadoPeronas(List<Persona> personas) throws IOException, DeterminarEstadoException;
 
 }

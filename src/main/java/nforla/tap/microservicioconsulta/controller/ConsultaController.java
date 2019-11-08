@@ -1,6 +1,7 @@
 package nforla.tap.microservicioconsulta.controller;
 
 import nforla.tap.microservicioconsulta.excepciones.CuilNoValidoException;
+import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
 import nforla.tap.microservicioconsulta.modelo.ConsultaResponse;
 import nforla.tap.microservicioconsulta.servicios.IServicioConsulta;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class ConsultaController {
             return ResponseEntity.badRequest()
                     .body(new ConsultaResponse(cuil, exc.getMessage()));
 
-        }catch (IOException exc){
+        }catch (IOException | DeterminarEstadoException exc){
 
             logger.error("Ha ocurrido una excepción: " + exc.getMessage());
 
@@ -59,7 +60,7 @@ public class ConsultaController {
 
             return ResponseEntity.ok(responses);
 
-        }catch (IOException exc){
+        }catch (IOException | DeterminarEstadoException exc){
 
             logger.error("Ha ocurrido una excepción: " + exc.getMessage());
 
