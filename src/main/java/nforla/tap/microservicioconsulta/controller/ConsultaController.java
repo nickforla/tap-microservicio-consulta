@@ -1,7 +1,11 @@
 package nforla.tap.microservicioconsulta.controller;
 
+import nforla.tap.microservicioconsulta.IServicioRequest;
+import nforla.tap.microservicioconsulta.ServicioRequest;
 import nforla.tap.microservicioconsulta.excepciones.CuilNoValidoException;
+import nforla.tap.microservicioconsulta.excepciones.CuotaMaximaRequestsSuperadaException;
 import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
+import nforla.tap.microservicioconsulta.modelo.ConsultaRequest;
 import nforla.tap.microservicioconsulta.modelo.ConsultaResponse;
 import nforla.tap.microservicioconsulta.servicios.IServicioConsulta;
 import org.slf4j.Logger;
@@ -10,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,16 +23,22 @@ import java.util.List;
 public class ConsultaController {
 
     private IServicioConsulta servicioConsulta;
+    private IServicioRequest servicioRequest;
     private final Logger logger = LoggerFactory.getLogger(ConsultaController.class);
 
-    public ConsultaController(IServicioConsulta servicioConsulta) {
+    public ConsultaController(IServicioConsulta servicioConsulta, IServicioRequest servicioRequest) {
         this.servicioConsulta = servicioConsulta;
+        this.servicioRequest = servicioRequest;
     }
 
     @GetMapping(path = "/persona/{cuil}")
-    public ResponseEntity<ConsultaResponse> analizarEstadoPersona(@PathVariable String cuil){
+    public ResponseEntity<ConsultaResponse> analizarEstadoPersona(@PathVariable String cuil, HttpServletRequest request){
 
         try{
+
+            ConsultaRequest consultaRequest = servicioRequest.doCuotaRequestFilter(request.getHeader("Authorization"), 1);
+
+            servicioRequest.saveRequest(consultaRequest);
 
             ConsultaResponse consultaResponse = servicioConsulta.analizarEstadoPersona(cuil);
 
@@ -47,14 +58,25 @@ public class ConsultaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ConsultaResponse(cuil, "Ha ocurrido un error al intentar determinar el estado. Intente nuevamente."));
 
+        }catch (CuotaMaximaRequestsSuperadaException exc){
+
+            logger.warn(exc.getMessage());
+
+            return ResponseEntity.ok(new ConsultaResponse(exc.getMessage()));
+
         }
     }
 
-    @GetMapping(path = "/personas")
-    public ResponseEntity analizarEstadoPersonas(@RequestBody List<String> cuils){
+    @PostMapping(path = "/personas")
+    public ResponseEntity analizarEstadoPersonas(@RequestBody List<String> cuils, HttpServletRequest request){
 
         logger.info(cuils.toString());
+
         try{
+
+            ConsultaRequest consultaRequest = servicioRequest.doCuotaRequestFilter(request.getHeader("Authorization"), cuils.size());
+
+            servicioRequest.saveRequest(consultaRequest);
 
             List<ConsultaResponse> responses = servicioConsulta.analizarEstadoPersonas(cuils);
 
@@ -66,6 +88,12 @@ public class ConsultaController {
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ConsultaResponse("Ha ocurrido un error al intentar determinar el estado. Intente nuevamente."));
+
+        }catch (CuotaMaximaRequestsSuperadaException exc){
+
+            logger.warn(exc.getMessage());
+
+            return ResponseEntity.ok(new ConsultaResponse(exc.getMessage()));
 
         }
     }
