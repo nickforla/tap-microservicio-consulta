@@ -1,4 +1,4 @@
-package nforla.tap.microservicioconsulta;
+package nforla.tap.microservicioconsulta.servicios;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nforla.tap.microservicioconsulta.excepciones.CuotaMaximaRequestsSuperadaException;
@@ -32,24 +32,23 @@ public class ServicioRequest implements IServicioRequest {
 
             throw new DeterminarEstadoException("JWT no está presente en el header del request");
 
-        }else{
-
-            Map<String, Object> jwtPayload = getJwtPayload(jwtToken.replace("Bearer ", ""));
-
-            String username = (String)jwtPayload.get("sub");
-            int cuotaMaximaRequestsPorHora = (int) jwtPayload.get("cta");
-
-            Stream<ConsultaRequest> consultasEnUltimaHora = consultaRequestRepository.streamByUsernameAndHoraRequestBetween(username, LocalDateTime.now().minusHours(1), LocalDateTime.now());
-
-            int estadosSolicitadosUltimaHora = consultasEnUltimaHora.mapToInt(ConsultaRequest::getCantidadEstadosSolicitados).sum();
-
-            if(estadosSolicitadosUltimaHora + cantidadEstadosSolicitados > cuotaMaximaRequestsPorHora){
-                throw new CuotaMaximaRequestsSuperadaException(String.format("Cuota máxima(%d) de solicitudes del usuario(%s) superada!", cuotaMaximaRequestsPorHora, username));
-            }
-
-            return new ConsultaRequest(username, LocalDateTime.now(), cantidadEstadosSolicitados);
-
         }
+
+        Map<String, Object> jwtPayload = getJwtPayload(jwtToken.replace("Bearer ", ""));
+
+        String username = (String)jwtPayload.get("sub");
+        int cuotaMaximaRequestsPorHora = (int) jwtPayload.get("cta");
+
+        Stream<ConsultaRequest> consultasEnUltimaHora = consultaRequestRepository.streamByUsernameAndHoraRequestBetween(username, LocalDateTime.now().minusHours(1), LocalDateTime.now());
+
+        int estadosSolicitadosUltimaHora = consultasEnUltimaHora.mapToInt(ConsultaRequest::getCantidadEstadosSolicitados).sum();
+
+        if(estadosSolicitadosUltimaHora + cantidadEstadosSolicitados > cuotaMaximaRequestsPorHora){
+            throw new CuotaMaximaRequestsSuperadaException(String.format("La consulta supera la cuota máxima(%d) de solicitudes del usuario(%s)!", cuotaMaximaRequestsPorHora, username));
+        }
+
+        return new ConsultaRequest(username, LocalDateTime.now(), cantidadEstadosSolicitados);
+
     }
 
     @SuppressWarnings("unchecked")

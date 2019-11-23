@@ -1,9 +1,8 @@
-package nforla.tap.microservicioconsulta;
+package nforla.tap.microservicioconsulta.servicios;
 
 import nforla.tap.microservicioconsulta.excepciones.CuotaMaximaRequestsSuperadaException;
 import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
 import nforla.tap.microservicioconsulta.modelo.ConsultaRequest;
-
 import java.io.IOException;
 
 public interface IServicioRequest {
