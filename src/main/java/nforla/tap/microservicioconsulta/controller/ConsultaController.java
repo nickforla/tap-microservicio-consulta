@@ -1,7 +1,6 @@
 package nforla.tap.microservicioconsulta.controller;
 
-import nforla.tap.microservicioconsulta.IServicioRequest;
-import nforla.tap.microservicioconsulta.ServicioRequest;
+import nforla.tap.microservicioconsulta.servicios.IServicioRequest;
 import nforla.tap.microservicioconsulta.excepciones.CuilNoValidoException;
 import nforla.tap.microservicioconsulta.excepciones.CuotaMaximaRequestsSuperadaException;
 import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
@@ -69,8 +68,6 @@ public class ConsultaController {
 
     @PostMapping(path = "/personas")
     public ResponseEntity analizarEstadoPersonas(@RequestBody List<String> cuils, HttpServletRequest request){
-
-        logger.info(cuils.toString());
 
         try{
 
