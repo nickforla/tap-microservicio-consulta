@@ -35,7 +35,7 @@ class ServicioRequestTest {
     }
 
     @Test
-    void givenCuotaSuperaRequestsPermitidosThenThrowException() {
+    void givenUsuarioSuperaRequestsPermitidosThenThrowException() {
 
         String jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2wiOlsiVVNFUiJdLCJjdGEiOjIwfQ.wYy2En2WtX-VO2C88Inf1qYiHw8gSY491JLsBHK1hkE";
         String username = "1234567890";
@@ -51,5 +51,23 @@ class ServicioRequestTest {
 
         assertThrows(CuotaMaximaRequestsSuperadaException.class, () -> servicioRequest.doCuotaRequestFilter(jwt, 5));
 
+    }
+
+    @Test
+    void givenUsuarioNoSuperaRequestsPermitidosThenReturnConsultaRequest() throws Exception{
+
+        String jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2wiOlsiVVNFUiJdLCJjdGEiOjIwfQ.wYy2En2WtX-VO2C88Inf1qYiHw8gSY491JLsBHK1hkE";
+        String username = "1234567890";
+
+        LocalDateTime localDateTime = LocalDateTime.now(Clock.systemDefaultZone());
+        when(timeStampProvider.getTimeStamp()).thenReturn(localDateTime);
+
+        ConsultaRequest consultaRequest = new ConsultaRequest(username, localDateTime, 18);
+        Stream<ConsultaRequest> consultaRequestStream =  Stream.of(consultaRequest);
+
+        when(consultaRequestRepository.streamByUsernameAndHoraRequestBetween(username, localDateTime.minusHours(1), localDateTime))
+                .thenReturn(consultaRequestStream);
+
+        assertEquals(consultaRequest.getClass(), servicioRequest.doCuotaRequestFilter(jwt, 2).getClass());
     }
 }

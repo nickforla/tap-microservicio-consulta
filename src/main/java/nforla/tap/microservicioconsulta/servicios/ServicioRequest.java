@@ -31,7 +31,7 @@ public class ServicioRequest implements IServicioRequest {
 
     public ConsultaRequest doCuotaRequestFilter(String jwtToken, int cantidadEstadosSolicitados) throws IOException, DeterminarEstadoException, CuotaMaximaRequestsSuperadaException {
 
-        if(jwtToken == null){
+        if(jwtToken == null || jwtToken.equals("")){
 
             throw new DeterminarEstadoException("JWT no está presente en el header del request");
         }
