@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>nforla.tap</groupId>
 	<artifactId>microservicio-consulta</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>microservicio-consulta</name>
 	<description>Microservicio que recibe las consultas para analizar el estado de los solicitantes</description>
 
@@ -43,7 +43,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -52,5 +51,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
