@@ -1,6 +1,7 @@
 package nforla.tap.microservicioconsulta.servicios;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import nforla.tap.microservicioconsulta.TimeStampProvider;
 import nforla.tap.microservicioconsulta.excepciones.CuotaMaximaRequestsSuperadaException;
 import nforla.tap.microservicioconsulta.excepciones.DeterminarEstadoException;
 import nforla.tap.microservicioconsulta.modelo.ConsultaRequest;
@@ -20,10 +21,12 @@ public class ServicioRequest implements IServicioRequest {
     private final Logger logger = LoggerFactory.getLogger(ServicioRequest.class);
     private ConsultaRequestRepository consultaRequestRepository;
     private ObjectMapper objectMapper;
+    private TimeStampProvider timeStampProvider;
 
-    public ServicioRequest(ConsultaRequestRepository consultaRequestRepository, ObjectMapper objectMapper) {
+    public ServicioRequest(ConsultaRequestRepository consultaRequestRepository, ObjectMapper objectMapper, TimeStampProvider timeStampProvider) {
         this.consultaRequestRepository = consultaRequestRepository;
         this.objectMapper = objectMapper;
+        this.timeStampProvider = timeStampProvider;
     }
 
     public ConsultaRequest doCuotaRequestFilter(String jwtToken, int cantidadEstadosSolicitados) throws IOException, DeterminarEstadoException, CuotaMaximaRequestsSuperadaException {
@@ -38,7 +41,7 @@ public class ServicioRequest implements IServicioRequest {
         String username = (String)jwtPayload.get("sub");
         int cuotaMaximaRequestsPorHora = (int) jwtPayload.get("cta");
 
-        Stream<ConsultaRequest> consultasEnUltimaHora = consultaRequestRepository.streamByUsernameAndHoraRequestBetween(username, LocalDateTime.now().minusHours(1), LocalDateTime.now());
+        Stream<ConsultaRequest> consultasEnUltimaHora = consultaRequestRepository.streamByUsernameAndHoraRequestBetween(username, timeStampProvider.getTimeStamp().minusHours(1), timeStampProvider.getTimeStamp());
 
         int estadosSolicitadosUltimaHora = consultasEnUltimaHora.mapToInt(ConsultaRequest::getCantidadEstadosSolicitados).sum();
 
